@@ -2,7 +2,6 @@
 import numpy as np
 import pandas as pd
 import yfinance as yf
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (accuracy_score, precision_score, recall_score,
                              f1_score, roc_auc_score, classification_report)
 from sklearn.preprocessing import StandardScaler
