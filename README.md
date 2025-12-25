@@ -88,7 +88,7 @@ The classifier primarily learns noise rather than durable structure
 ## Repository Structure
 
 ```graphql
-core\
+core/
   signals.py        # signal/model construction
   features.py       # feature definitions
   backtest.py       # backtest engines
