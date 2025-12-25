@@ -9,7 +9,7 @@ from sklearn.model_selection import TimeSeriesSplit
 import matplotlib.pyplot as plt
 import xgboost as xgb
 
-seed = 42
+seed = 76
 
 def get_data(tickers=["SPY"], start="2015-01-01", end=None):
     """Fetches and processes data from yfinance, returns feature DataFrame"""
