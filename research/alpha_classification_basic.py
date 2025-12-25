@@ -16,7 +16,7 @@ START = "2015-01-01"
 END = None                 # None => today
 HORIZON = 1                # trading days
 TEST_SIZE_FRAC = 0.2
-RANDOM_SEED = 42
+RANDOM_SEED = 39
 
 
 # Fetch data from yfinance
