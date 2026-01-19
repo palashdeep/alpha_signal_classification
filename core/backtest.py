@@ -1,21 +1,20 @@
 import numpy as np
 import pandas as pd
 
-def mean_reversion_backtest(price, z_score, entry_z, exit_z, cost_per_trade=0.0):
+def mean_reversion_backtest(price, z_score, entry_z, exit_z, initial_equity = 1000, cost_per_trade=0.0):
     """Backtest a simple mean reversion strategy based on z-score signals"""
 
-    price = price.loc[z_score.index].dropna()
-    z_score = z_score.loc[price.index]
     position = 0
     entry_price = None
 
-    equity = 0.0
+    equity = initial_equity
     equity_curve = []
     trade_logs = []
+    position_log = []
 
     for t in range(len(price)):
-        p = price.iloc[t]
-        zt = z_score.iloc[t]
+        p = price.iloc[t].item()
+        zt = z_score.iloc[t].item()
         date = price.index[t]
 
         if position == 0:
@@ -47,11 +46,12 @@ def mean_reversion_backtest(price, z_score, entry_z, exit_z, cost_per_trade=0.0)
             equity -= cost_per_trade
 
         equity_curve.append(equity)
+        position_log.append(position)
 
     equity = pd.Series(equity_curve, index=price.index)
     trades = pd.DataFrame(trade_logs)
 
-    return equity, trades
+    return equity, trades, position_log
 
 def classification_backtest(df, probs_col, threshold=0.5):
     """Backtests a classification-based strategy using predicted probabilities"""

@@ -2,9 +2,10 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
+from core.metrics import max_drawdown
 from sklearn.metrics import roc_curve, auc, accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 
-def fetch_data(tickers, start=None, end=None, period='10y', interval='1d'):
+def fetch_data(tickers, start=None, end=None, period=None, interval='1d'):
     """Fetch OHLCV using yfinance. Returns a dict of DataFrames (close-adj included).
     """
     data = {}
@@ -31,8 +32,9 @@ def plot_equity(equity_dict, title="Equity Curve", fname=None):
         plt.savefig(fname, bbox_inches='tight')
     plt.show()
 
-def plot_drawdowns(drawdown, title="Drawdown", fname=None):
+def plot_drawdowns(equity_tc, title="Drawdown", fname=None):
     """Drawdown plot"""
+    drawdown, _ = max_drawdown(equity_tc)
     plt.figure(figsize=(10, 4))
     plt.plot(drawdown.index, drawdown.values, color='red')
     plt.title(title)
@@ -56,7 +58,7 @@ def plot_price_z_position(price, z, position, entry_z, title="Price & Z-score", 
     ax[1].axhline(0, color="black", linewidth=0.8)
     ax[1].fill_between(
         z.index, z.min(), z.max(),
-        where=(position != 0),
+        where=([True if pos !=0 else False for pos in position]),
         alpha=0.2
     )
 
@@ -118,19 +120,6 @@ def plot_roc(y_true, y_prob, title="ROC Curve", fname=None):
     plt.ylabel("True Positive Rate")
     plt.title(title)
     plt.legend()
-    plt.tight_layout()
-    if fname:
-        plt.savefig(fname, bbox_inches='tight')
-    plt.show()
-
-def plot_threshold_sensitivity(thresholds, returns, title="Threshold Sensitivity", fname=None):
-    """Senstivity to thresholds"""
-    plt.figure(figsize=(8, 4))
-    plt.plot(thresholds, returns, marker="o")
-    plt.xlabel("Probability Threshold")
-    plt.ylabel("Strategy Return")
-    plt.title(title)
-    plt.grid(True)
     plt.tight_layout()
     if fname:
         plt.savefig(fname, bbox_inches='tight')
