@@ -125,7 +125,7 @@ def plot_roc(y_true, y_prob, title="ROC Curve", fname=None):
         plt.savefig(fname, bbox_inches='tight')
     plt.show()
 
-def strategy_summary(equity, trades, periods_per_year=252):
+def strategy_summary(equity, trades, periods_per_year=252, tname=None):
     """Summarizes the MR strategy"""
     returns = equity.pct_change().dropna()
 
@@ -143,7 +143,7 @@ def strategy_summary(equity, trades, periods_per_year=252):
     avg_pnl = trades["pnl"].mean() if not trades.empty else 0.0
     n_trades = len(trades)
 
-    return pd.DataFrame([{
+    df = pd.DataFrame([{
         "Total Return": total_return,
         "Sharpe": sharpe,
         "Max Drawdown": max_dd,
@@ -152,7 +152,12 @@ def strategy_summary(equity, trades, periods_per_year=252):
         "Num Trades": n_trades
     }])
 
-def asset_comparison(results_dict):
+    if tname:
+        df.to_markdown(tname, index=False)
+    
+    return df
+
+def asset_comparison(results_dict, tname=None):
     """
     Compare results for different assets
     results_dict: {asset: (equity, trades)}
@@ -177,12 +182,17 @@ def asset_comparison(results_dict):
             "Num Trades": len(trades)
         })
 
-    return pd.DataFrame(rows)
+    df = pd.DataFrame(rows)
 
-def cost_impact_table(no_cost_equity, cost_equity):
+    if tname:
+        df.to_markdown(tname, index=False)
+    
+    return df
+
+def cost_impact_table(no_cost_equity, cost_equity, tname=None):
     """Impact of including transaction costs"""
     
-    return pd.DataFrame([
+    df = pd.DataFrame([
         {
             "Scenario": "No Costs",
             "Total Return": no_cost_equity.iloc[-1] / no_cost_equity.iloc[0] - 1
@@ -193,18 +203,28 @@ def cost_impact_table(no_cost_equity, cost_equity):
         }
     ])
 
-def trade_duration_stats(trades):
+    if tname:
+        df.to_markdown(tname, index=False)
+
+    return df
+
+def trade_duration_stats(trades, tname=None):
     """Trade duration summary"""
 
     durations = (trades["exit_date"] - trades["entry_date"]).dt.days
 
-    return pd.DataFrame([{
+    df = pd.DataFrame([{
         "Avg Duration (days)": durations.mean(),
         "Median Duration (days)": durations.median(),
         "Max Duration (days)": durations.max()
     }])
 
-def classification_metrics(y_true, y_pred, y_prob=None):
+    if tname:
+        df.to_markdown(tname, index=False)
+
+    return df
+
+def classification_metrics(y_true, y_pred, y_prob=None, tname=None):
     """Metrics for quality of classification"""
 
     row = {
@@ -217,12 +237,22 @@ def classification_metrics(y_true, y_pred, y_prob=None):
     if y_prob is not None:
         row["AUC"] = roc_auc_score(y_true, y_prob)
 
-    return pd.DataFrame([row])
+    df = pd.DataFrame([row])
 
-def threshold_sensitivity_table(thresholds, returns):
+    if tname:
+        df.to_markdown(tname, index=False)
+    
+    return df
+
+def threshold_sensitivity_table(thresholds, returns, tname=None):
     """Senstivity to thresholds"""
     
-    return pd.DataFrame({
+    df = pd.DataFrame({
         "Threshold": thresholds,
         "Strategy Return": returns
     })
+
+    if tname:
+        df.to_markdown(tname, index=False)
+    
+    return df

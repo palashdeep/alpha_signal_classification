@@ -2,7 +2,7 @@
 
 ## Summary
 
-This project studies whether short-horizon equity returns contain exploitable structure once realistic noise and trading frictions are taken inot account. We examine this through two complementary approaches:
+This project studies whether short-horizon equity returns contain exploitable structure once realistic noise and trading frictions are taken into account. We examine this through two complementary approaches:
 
 1. **Rule-based mean reversion signals** derived from price deviations
 2. **Feature-based classification models** trained to predict short-term returns
@@ -11,7 +11,7 @@ Across both approaches, apparent predictability is fragile and degrades rapidly 
 
 ## Motivation
 
-Short-horizon trading strategies often appear profitable in backtests, especially when evaulated without costs. However, at these horizons, microstructure noise, regime dependence, and transaction costs dominate small statistical edges.
+Short-horizon trading strategies often appear profitable in backtests, especially when evaluated without costs. However, at these horizons, microstructure noise, regime dependence, and transaction costs dominate small statistical edges.
 
 The goal of this project is not to construct profitable alpha, but to understand:
 
@@ -44,7 +44,7 @@ We also test whether short-horizon returns are predictable using standard featur
 - volatility measures,
 - price relative to rolling bands.
 
-A simple Logistic Regression classifier is used to avoid overfitting. The classification model is evaluated both statiscally (ROC/AUC) and economically (backtest).
+A simple Logistic Regression classifier is used to avoid overfitting. The classification model is evaluated both statistically (ROC/AUC) and economically (backtest).
 
 ## Experimental Design
 
@@ -52,7 +52,7 @@ To avoid overstating results, we follow a deliberately conservative design:
 
 - Strict train/test splits based on time
 - Minimal hyperparameter tuning
-- Senstivity analysis over key thresholds
+- Sensitivity analysis over key thresholds
 - Transaction cost modeling
 - Evaluation across multiple assets
 
@@ -62,21 +62,88 @@ No attempt is made to optimize parameters for peak backtest performance.
 
 ### Mean Reversion
 
-- Mean reversion signals occasionally generate small profits before costs
-- Even small transacations costs eliminate most apparent edge
-- Drawdowns are large relative to cummulative returns
-- Performance is highly sensitive to threshold choice and market regime
+**Figure 1. Mean Reversion Equity Curve (With vs Without Costs)**
+![Mean Reversion Equity](results/mean_rev_plot.png)
 
-Overall, risk dominates reward at short horizons
+*The strategy appears mildly profitable in an idealized, cost-free setting. However, even modest transaction costs eliminate most of the apparent edge, highlighting the fragility of short-horizon mean reversion.*
+
+---
+
+**Figure 2. Drawdown Profile**
+![Drawdowns](results/drawdowns.png)
+
+*Drawdowns are large relative to cumulative returns, indicating an unfavorable risk-reward tradeoff.*
+
+---
+
+**Figure 3. Price, Z-Score, and Positions**
+![Price Z Position](results/price_z_pos.png)
+
+*While some price reversions occur as expected, extended deviations during trending regimes lead to sustained losses.*
+
+---
+
+**Figure 4. Trade PnL Distribution**
+![Trade PnL](results/trade_pnl.png)
+
+*The payoff distribution consists of many small gains punctuated by fewer but larger losses, explaining the observed drawdowns.*
+
+---
+
+**Figure 5. Trade Durations vs PnL**
+![Trade Duration](results/trade_duration.png)
+
+*Longer holding periods do not reliably improve outcomes; losses often arise from waiting for reversion that fails to materialize.*
+
+---
+
+**Table 1. Mean Reversion Strategy Summary**
+|   Total Return |   Sharpe |   Max Drawdown |   Win Rate |   Avg Trade PnL |   Num Trades |
+|---------------:|---------:|---------------:|-----------:|----------------:|-------------:|
+|      0.0913235 | 0.248637 |     -0.0830123 |   0.661017 |         1.64786 |           59 |
+
+*Risk-adjusted performance remains weak, with drawdowns dominating returns.*
+
+---
+
+**Table 2. Transaction Cost Impact**
+| Scenario   |   Total Return |
+|:-----------|---------------:|
+| No Costs   |      0.0972235 |
+| With Costs |      0.0913235 |
+
+*Even small transaction costs are sufficient to remove apparent profitability.*
 
 ### Classification
 
-- Classification performance is weak (AUC close to random)
-- Small predictive gains do not translate into stable PnL
-- Strategy performance deteriorates quickly under threshold changes
-- Added model complexity does not improve robustness
+**Figure 6. Classification Strategy vs Buy-and-Hold**
+![Classification Strategy](results/classification_strategy_eq.png)
 
-The classifier primarily learns noise rather than durable structure
+*Weak statistical predictability remains close to random, indicating limited separability of short horizon returns using standard features.*
+
+---
+
+**Figure 8. Sensitivity to Decision Threshold**
+![Sensitivity](results/sensitivity_entry_threshold.png)
+
+*Performance is unstable across decision thresholds, suggesting the absence of a robust operating regime.*
+
+---
+
+**Table 3. Classification Metrics**
+|   Accuracy |   Precision |   Recall |       F1 |      AUC |
+|-----------:|------------:|---------:|---------:|---------:|
+|   0.577899 |    0.586338 | 0.953704 | 0.726204 | 0.486274 |
+
+*Statistical gains are marginal and insufficient to support a reliable trading strategy.*
+
+---
+
+**Table 4. Classification Strategy Summary**
+|   Total Return |   Sharpe |   Max Drawdown |   Win Rate |   Avg Trade PnL |   Num Trades |
+|---------------:|---------:|---------------:|-----------:|----------------:|-------------:|
+|       0.684523 |  1.62525 |      -0.170666 |          0 |               0 |            0 |
+
 
 ## Key Insights
 
